@@ -1,0 +1,94 @@
+
+{
+	"levelobjects" : [ 
+            {
+                "name" : "ground",
+                "type" : "box",
+                  "position": [0.0,0.0,0.0],
+                  "rotationy" : 0,
+                  "scale": [21.0,1.0,21.0],
+                  "color": "0xffffff",
+                  "parentname": ""
+            },
+            {
+                "name" : "wall_left",
+                "type" : "box",
+                  "position": [0.0,1.0,-10.0],
+                  "rotationy" : 0,
+                  "scale": [20.0,1.0,1.0],
+                  "color": "0x177013",
+                  "parentname": ""
+            },
+            {
+                "name" : "wall_right",
+                "type" : "box",
+                  "position": [0.0,1.0,10.0],
+                  "rotationy" : 0,
+                  "scale": [20.0,1.0,1.0],
+                  "color": "0x177013",
+                  "parentname": ""
+            },
+            {
+                "name" : "wall_up",
+                "type" : "box",
+                  "position": [10.0,1.0,0.0],
+                  "rotationy" : 0,
+                  "scale": [1.0,1.0,20.0],
+                  "color": "0x177013",
+                  "parentname": ""
+            },
+            {
+                "name" : "wall_down",
+                "type" : "box",
+                  "position": [-10.0,1.0,0.0],
+                  "rotationy" : 0,
+                  "scale": [1.0,1.0,20.0],
+                  "color": "0x177013",
+                  "parentname": ""
+            }
+    ],
+    
+    "extraObjects" : [
+        {
+            "name" : "lamp1",
+            "type" : "3dmodel",
+              "model" : "data/StreetLampModel.dae",
+              "position": [14.0,0.0,14.2],
+              "rotationy" : 0,
+              "scale": 1,
+              "height": 1,
+              "parentname": ""
+        },
+        {
+            "name" : "pointlight1",
+            "type" : "point_light",
+              "position" : [14.0,4.0,14.2],
+              "distance"   : 20,
+              "color"    : [0.9,0.5,0.5],
+              "intensity": 0.9 ,
+              "parentname": "lamp1"
+        },
+
+        {
+            "name" : "lamp2",
+            "type" : "3dmodel",
+              "model" : "data/StreetLampModel.dae",
+              "position": [-20.0,0.0,-20.2],
+              "rotationy" : 0,
+              "scale": 1,
+              "height": 1,
+              "parentname": ""
+        },
+        {
+            "name" : "spotlight1",
+            "type" : "spot_light",
+              "position" : [-20.0,10.0,-20.2],
+              "target_position" : [-20.0,0,-20.2],
+              "distance"   : 20,
+              "color"    : [0.9,0.5,0.5],
+              "angle"    : 0.9,
+              "intensity": 1.0 ,
+              "parentname": "lamp2"
+        }
+    ]
+}
