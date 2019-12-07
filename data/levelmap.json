@@ -15,7 +15,7 @@
                 "type" : "box",
                   "position": [0.0,1.0,-10.0],
                   "rotationy" : 0,
-                  "scale": [20.0,1.0,1.0],
+                  "scale": [20.0,0.5,1.0],
                   "color": "0x177013",
                   "parentname": ""
             },
@@ -24,7 +24,7 @@
                 "type" : "box",
                   "position": [0.0,1.0,10.0],
                   "rotationy" : 0,
-                  "scale": [20.0,1.0,1.0],
+                  "scale": [20.0,0.5,1.0],
                   "color": "0x177013",
                   "parentname": ""
             },
@@ -33,7 +33,7 @@
                 "type" : "box",
                   "position": [10.0,1.0,0.0],
                   "rotationy" : 0,
-                  "scale": [1.0,1.0,20.0],
+                  "scale": [1.0,0.5,20.0],
                   "color": "0x177013",
                   "parentname": ""
             },
@@ -42,7 +42,7 @@
                 "type" : "box",
                   "position": [-10.0,1.0,0.0],
                   "rotationy" : 0,
-                  "scale": [1.0,1.0,20.0],
+                  "scale": [1.0,0.5,20.0],
                   "color": "0x177013",
                   "parentname": ""
             }
