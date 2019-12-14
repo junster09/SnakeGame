@@ -22,6 +22,13 @@
 		<script src="js/snake.js"></script>
 		<script>
 
+
+
+
+			//TODO 
+			//Add ui that shows current speed,score, highscore
+			//change sweeden
+			//grofit
 			var camera, scene, renderer,controls;
 			var box;
 			var delta = 0.0;
@@ -102,8 +109,9 @@
 				if(deltaTime >= (1/tickRate)){
 					moveSnake(snakeVelocity);
 					deltaTime = 0;
-					tickRate+= 0.01;
+					//tickRate+= 0.01;
 					checkApple();
+					checkSnakeCollisions();
 					
 				}
 				
@@ -156,12 +164,15 @@
 			}
 
 			function killSnake(){
-				console.log(snake)
-				for(var i = 1; i < snake.children.length; i++){
+				console.log("snake was: " + snake.children.length)
+				while(snake.children.length > 2){
+					for(var i = 1; i < snake.children.length; i++){
 						snake.remove(snake.children[i]);
 					
 				}
-				console.log(snake)
+				console.log("snake is now: " + snake.children.length)
+				tickRate = 5;
+				}
 			}
 
 			function checkCollision(object1 , object2)
@@ -169,10 +180,12 @@
 
 				var object1Box = new THREE.Box3(); // create a new box
 				object1Box.setFromObject(object1);  // update the from the object so it's got right position and size
+				object1Box.expandByScalar(-0.5);
 				//object1Box.scale.set(0.9,0.9,0.9);
 
 				var object2Box = new THREE.Box3(); // same for second object
 				object2Box.setFromObject(object2);
+				object2Box.expandByScalar(-0.5);
 				//object2Box.scale.set(0.9,0.9,0.9);
 
 				if (object1Box.intersectsBox(object2Box))  // now check if the two boxes are colliding
@@ -185,7 +198,6 @@
 
 				}
 
-
 			}
 
 			function moveSnake(velocity){
@@ -194,6 +206,7 @@
 					snake.children[(i)].position.set(
 						snake.children[(i-1)].position.x,snake.children[(i-1)].position.y,snake.children[(i-1)].position.z
 						)
+
 				}
 
 				if(snake.children[0].position.x > 10){
@@ -218,7 +231,8 @@
 			function eat(){
 				var newSnakeBod = new THREE.Mesh(
 					new THREE.BoxBufferGeometry(1,1,1),
-					new THREE.MeshBasicMaterial({color: 0x00aa00})
+					//new THREE.MeshBasicMaterial({color: 0x00aa00})
+					new THREE.MeshBasicMaterial({color : (Math.random() * 0xffffffff)})
 				)
 				newSnakeBod.name = "snake body";
 				snake.add(newSnakeBod)
@@ -226,7 +240,15 @@
 			}
 
 
-
+			function checkSnakeCollisions(){
+				for(var i = snake.children.length-1; i > 0; i--){
+					
+					if(checkCollision(snake.children[0],snake.children[i])){
+						killSnake();
+						
+					}
+				}
+			}
 
 			function makeWorld() {
 				setUpCubeMapAsBackground();
@@ -274,7 +296,7 @@
 			{
 
 
-				var path = "data/SwedishRoyalCastle/";
+				var path = "data/Sorsele3/";
 				var format = '.jpg';
 				var urls = [
 					path + 'px' + format, path + 'nx' + format,
