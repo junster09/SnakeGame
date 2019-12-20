@@ -43,6 +43,10 @@
 			var snakeVelocity;
 			var apple;
 			var tickRate = 5
+
+
+			var textTexture;
+			var snakeLen = 0;
 			init();
 			animate();
 			function init() {
@@ -55,6 +59,16 @@
 
 				var light = new THREE.AmbientLight( 0x404040, 0.4 ); // soft white light
 				scene.add( light );
+
+				//UI STUFF
+				ui_scene = new THREE.Scene();
+				ui_camera = new THREE.OrthographicCamera( window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, 1, 1000 );
+				ui_scene.add(ui_camera);
+
+				textTexture = makeUIElements(0x000000,0.0,0.0,0.5,0.15);//lower one
+                antiTexture = makeUIElements(0x000000,0.0,0.1,0.5,0.15);//upper one
+				
+
 
 				//var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.7 );
 
@@ -98,6 +112,8 @@
 			}
 
 			var deltaTime = 0;
+
+
 			function animate(time) { requestAnimationFrame( animate );
 				//mesh.rotation.x += 0.005;
 				//mesh.rotation.y += 0.01;
@@ -120,8 +136,31 @@
 					particleSystem.update(deltaTime);
 				}
 				*/
+				stringToDisplay = "Points: " + snakeLen;
+
+				textTexture.children[0].material = new THREE.MeshBasicMaterial( 
+					{ 
+						color: 0x8A8A8A, 
+						map : makeTextTexture(stringToDisplay), 
+						transparent:true 
+                    });;
+                    
+
+				var aniToDisplay = "Speed: " + tickRate;
+				
+                antiTexture.children[0].material = new THREE.MeshBasicMaterial( 
+                    { 
+                        color: 0x8A8A8A, 
+                        map : makeTextTexture(aniToDisplay), 
+                        transparent:true 
+                    });;
 
 				renderer.render( scene, camera );
+				renderer.autoClear = false
+				renderer.render( ui_scene, ui_camera );
+				renderer.autoClear = true;
+
+
 			}
 
 
@@ -144,6 +183,7 @@
 				)
 				newSnakeBod.name = "snake body";
 				snake.add(newSnakeBod)
+				snakeLen += 1;
 
 				return snake
 			}
@@ -229,6 +269,7 @@
 			}
 
 			function eat(){
+				snakeLen += 1;
 				var newSnakeBod = new THREE.Mesh(
 					new THREE.BoxBufferGeometry(1,1,1),
 					//new THREE.MeshBasicMaterial({color: 0x00aa00})
@@ -244,6 +285,7 @@
 				for(var i = snake.children.length-1; i > 0; i--){
 					
 					if(checkCollision(snake.children[0],snake.children[i])){
+						snakeLen = 1;
 						killSnake();
 						
 					}
@@ -292,6 +334,99 @@
 
 			}	
 
+
+			function makeUIElements(color,x,y,xsize,ysize)
+			{
+
+				var texture = new THREE.TextureLoader().load( 'data/ammo.png' );
+				var texture_alpha = new THREE.TextureLoader().load( 'data/ammo_alpha.png' );
+				texture.color = color
+				if (texture)
+					console.log("loaded texture");
+
+				//here we used normalized coordinates and scales
+				// 0,0 is bottm left of screen
+				// 1,1 is top right of screen
+				// A scale of 1,1 covers the screen
+				x = makeUIQuad(color,x,y,xsize,ysize,texture,texture_alpha) 
+				ui_scene.add(x);
+				return x;
+			}
+
+			function makeUIQuad(color,x,y,xsize,ysize,texture,texture_alpha)
+			{
+
+
+				
+				// scale to match screen coordinates 
+				var xScreenSize = xsize * window.innerWidth ; 
+						
+				var yScreenSize = ysize * window.innerHeight ; 
+				
+				// move position to bottom right
+				var adjustedX = getScreenX(x) + xScreenSize /2;   
+				var adjustedY = getScreenY(y) + yScreenSize /2;   
+
+				var geometry = new THREE.PlaneBufferGeometry( xScreenSize, yScreenSize, 4,4 );
+				var numMat = new THREE.MeshBasicMaterial( 
+					{ 
+						color: 0x000000, 
+						map : makeTextTexture("45"), 
+						transparent:true 
+					});
+
+				var mesh = new THREE.Mesh( geometry, numMat );
+                mesh.position.set(adjustedX,adjustedY,-15,-100);
+                /*
+				if (bak_mesh)
+                    mesh.add(bak_mesh);
+                */
+				var group = new THREE.Group();
+                group.add(mesh);
+                /*
+				if (bak_mesh)
+					group.add(bak_mesh);
+                */
+
+				return group;
+	
+			}
+
+			
+			function getScreenX(normalizedX)
+			{
+				var scaledX =  normalizedX * window.innerWidth;
+				return window.innerWidth / -2  + scaledX;
+			}
+			
+			function getScreenY(normalizedY)
+			{
+				var scaledY =  normalizedY * window.innerHeight;
+				return window.innerHeight / -2  + scaledY;
+
+			}
+
+			function makeTextTexture(text)
+			{
+				var canvasW = 1024;
+				var canvasH = 256;
+				var hudCanvas = document.createElement('canvas');		
+				// Again, set dimensions to fit the screen.
+				
+				hudCanvas.width = canvasW;
+				hudCanvas.height = canvasH;
+
+				// Get 2D context and draw something supercool.
+				var hudBitmap = hudCanvas.getContext('2d');
+				hudBitmap.font = "Bold 50px Impact";
+				hudBitmap.textAlign = 'center';
+				hudBitmap.fillStyle = "rgba(245,245,245,0.75)";
+				hudBitmap.fillText(text, canvasW / 2, canvasH / 2);
+				var hudTexture = new THREE.Texture(hudCanvas) 
+				hudTexture.needsUpdate = true;
+				return hudTexture;
+			}
+	
 			function setUpCubeMapAsBackground()
 			{
 
@@ -474,19 +609,31 @@
     switch ( event.keyCode ) {
 
 		case 65: //A
-		snakeVelocity.set(1,1,0)
+		if(snakeVelocity.x != -1){
+			snakeVelocity.set(1,1,0)
+		}
+
         break;
 
 		case 68: //D
-		snakeVelocity.set(-1,1,0)
+		if(snakeVelocity.x != 1){
+			snakeVelocity.set(-1,1,0)
+		}
+
 		break;
 
 		case 83: //S 
-		snakeVelocity.set(0,1,-1)
+		if(snakeVelocity.z != 1){
+			snakeVelocity.set(0,1,-1)
+		}
+
         break;
 
 		case 87: //W
-		snakeVelocity.set(0,1,1)
+		if(snakeVelocity.z != -1){
+			snakeVelocity.set(0,1,1)
+		}
+
 		break;
 
         case 85: //U
